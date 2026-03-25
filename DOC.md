@@ -66,23 +66,23 @@
 
 ## 直接使用 Surge 模块
 
-[https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.sgmodule](https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.sgmodule)
+[https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.sgmodule](https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.sgmodule)
 
 `Shadowrocket` 也支持 使用类似 `Surge`
 
 ## Stash 使用覆写
 
-[https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.stash.stoverride](https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.stash.stoverride)
+[https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.stash.stoverride](https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.stash.stoverride)
 
 ## Loon 使用插件
 
-[https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.loon.plugin](https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.loon.plugin)
+[https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.loon.plugin](https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.loon.plugin)
 
 ## 其他客户端的配置请自行参考对应的配置方式
 
 ## BoxJs
 
-使用 [BoxJs 测试版](https://chavyleung.gitbook.io/boxjs) 添加 订阅 [https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/boxjs.json](https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/boxjs.json)
+使用 [BoxJs 测试版](https://chavyleung.gitbook.io/boxjs) 添加 订阅 [https://raw.githubusercontent.com/longnk/SMSForward/custom/boxjs.json](https://raw.githubusercontent.com/longnk/SMSForward/custom/boxjs.json)
 
 ## 配置
 

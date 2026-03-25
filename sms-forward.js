@@ -1,4 +1,4 @@
-const key = 'sms_forward'
+const key = 'sms_forward_custom'
 
 const config = {
   tencent: {
@@ -12,9 +12,9 @@ const config = {
 }
 const $ = new Env(key)
 
-const KEY_INITED = `@ChinaTelecomOperators.${key}.inited`
-const KEY_TYPE = `@ChinaTelecomOperators.${key}.type`
-const KEY_KEYS = `@ChinaTelecomOperators.${key}.keys`
+const KEY_INITED = `@longnk.${key}.inited`
+const KEY_TYPE = `@longnk.${key}.type`
+const KEY_KEYS = `@longnk.${key}.keys`
 
 const keys = `${$.getdata(KEY_KEYS) || ''}`
   .split(',')
@@ -28,7 +28,7 @@ $.setdata(new Date().toLocaleString('zh'), KEY_INITED)
 let result
 
 !(async () => {
-  const KEY_DISABLED = `@ChinaTelecomOperators.${key}.disabled`
+  const KEY_DISABLED = `@longnk.${key}.disabled`
   const disabled = $.getdata(KEY_DISABLED)
 
   if (String(disabled) === 'true') {
@@ -66,7 +66,7 @@ let result
 
   const fn = async (key, index) => {
     $.log(`👉🏻 [${index}][${key}] 配置开始`)
-    const KEY_DISABLED = `@ChinaTelecomOperators.${key}.disabled`
+    const KEY_DISABLED = `@longnk.${key}.disabled`
     const disabled = $.getdata(KEY_DISABLED)
 
     if (String(disabled) === 'true') {
@@ -74,16 +74,18 @@ let result
       return
     }
 
-    const KEY_SENDER_ALLOW = `@ChinaTelecomOperators.${key}.sender_allow`
-    const KEY_SENDER_DENY = `@ChinaTelecomOperators.${key}.sender_deny`
-    const KEY_TEXT_ALLOW = `@ChinaTelecomOperators.${key}.text_allow`
-    const KEY_TEXT_DENY = `@ChinaTelecomOperators.${key}.text_deny`
+    const KEY_SENDER_ALLOW = `@longnk.${key}.sender_allow`
+    const KEY_SENDER_DENY = `@longnk.${key}.sender_deny`
+    const KEY_TEXT_ALLOW = `@longnk.${key}.text_allow`
+    const KEY_TEXT_DENY = `@longnk.${key}.text_deny`
 
-    const KEY_TITLE = `@ChinaTelecomOperators.${key}.title`
-    const KEY_SUBTITLE = `@ChinaTelecomOperators.${key}.subtitle`
-    const KEY_BODY = `@ChinaTelecomOperators.${key}.body`
-    const KEY_BARK = `@ChinaTelecomOperators.${key}.bark`
-    const KEY_PUSHDEER = `@ChinaTelecomOperators.${key}.pushdeer`
+    const KEY_TITLE = `@longnk.${key}.title`
+    const KEY_SUBTITLE = `@longnk.${key}.subtitle`
+    const KEY_BODY = `@longnk.${key}.body`
+    const KEY_BARK = `@longnk.${key}.bark`
+    const KEY_PUSHDEER = `@longnk.${key}.pushdeer`
+    const KEY_JSON_URL = `@longnk.${key}.post_json_url`
+    const KEY_JSON_DATA = `@longnk.${key}.post_json_data`
 
     const senderAllow = $.getdata(KEY_SENDER_ALLOW) || ''
     const senderAllowRegExp = new RegExp(senderAllow)
@@ -130,8 +132,8 @@ let result
       console.log('已判断号码和内容 ❌ 不会转发')
       return
     }
-    const KEY_CODE_TEST = `@ChinaTelecomOperators.${key}.code_test`
-    const KEY_CODE_GET = `@ChinaTelecomOperators.${key}.code_get`
+    const KEY_CODE_TEST = `@longnk.${key}.code_test`
+    const KEY_CODE_GET = `@longnk.${key}.code_get`
 
     const codeTest = $.getdata(KEY_CODE_TEST) || '.+(码)'
     const codeTestRegExp = new RegExp(codeTest)
@@ -184,15 +186,15 @@ let result
     console.log(`👉🏻 [${index}][${key}] 副标题 ${subtitle}`)
     console.log(`👉🏻 [${index}][${key}] 正文 ${body}`)
 
-    await notify(title, subtitle, body, { copy, KEY_PUSHDEER, KEY_BARK })
+    await notify(title, subtitle, body, { copy, KEY_PUSHDEER, KEY_BARK, KEY_JSON_URL, KEY_JSON_DATA })
     $.log(`👉🏻 [${index}][${key}] 配置结束`)
   }
   for (const [index, key] of keys.entries()) {
     await fn(key, index)
   }
 
-  const KEY_REPLACE_NUM = `@ChinaTelecomOperators.${key}.replace_num`
-  const KEY_NO_POST = `@ChinaTelecomOperators.${key}.no_post`
+  const KEY_REPLACE_NUM = `@longnk.${key}.replace_num`
+  const KEY_NO_POST = `@longnk.${key}.no_post`
 
   const noPost = $.getdata(KEY_NO_POST)
 
@@ -227,11 +229,45 @@ let result
     $.done(result)
   })
 
-async function notify(title, subtitle, body, { copy, KEY_PUSHDEER, KEY_BARK }) {
+async function notify(title, subtitle, body, { copy, KEY_PUSHDEER, KEY_BARK, KEY_JSON_URL, KEY_JSON_DATA }) {
   const pushdeer = $.getdata(KEY_PUSHDEER)
   const bark = $.getdata(KEY_BARK)
-
-  if (pushdeer || bark) {
+  const json_url = $.getdata(KEY_JSON_URL)
+  const json_data = $.getdata(KEY_JSON_DATA)
+  
+  if (pushdeer || bark || (json_url && json_data)) {
+    if (json_url && json_data) {
+      try {
+        const url = json_url
+          .replace('[号码]', encodeURIComponent(title))
+          .replace('[内容]', encodeURIComponent(body))
+          .replace('[验证码]', encodeURIComponent(copy))
+        //$.msg('短信转发', `json url`, `${url}`, {})
+        $.log(`开始 自定义JSON 请求: ${url}`)
+        const data = json_data
+          .replace('[号码]', title)
+          .replace('[内容]', body)
+          .replace('[验证码]', copy)
+        const res = await $.http.post({
+          url: url,
+          body: data,
+          headers: {
+            'content-type': 'application/json',
+            'Accept': '*/*'
+          }
+        })
+        // console.log(res)
+        const status = $.lodash_get(res, 'status')
+        $.log('↓ res status')
+        $.log(status)
+        if (![200, 301, 302].includes(status)) {
+          throw new Error(`错误状态码:${status}`)
+        }
+      } catch (e) {
+        console.log(e)
+        $.msg('短信转发', `❌ 自定义JSON 请求`, `${$.lodash_get(e, 'message') || $.lodash_get(e, 'error') || e}`, {})
+      }
+    }
     if (pushdeer) {
       try {
         const url = pushdeer.replace('[推送全文]', encodeURIComponent(`${title}\n${subtitle}\n${body}`))

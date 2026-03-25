@@ -1,6 +1,6 @@
-name: 短信转发
-desc: https://github.com/ChinaTelecomOperators/SMSForward
-icon: https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/asset/1.png
+name: 短信转发(自用)
+desc: https://github.com/longnk/SMSForward
+icon: https://raw.githubusercontent.com/longnk/SMSForward/custom/asset/1.png
 
 http:
   mitm:
@@ -16,5 +16,5 @@ http:
 
 script-providers:
   "sms-forward":
-    url: https://raw.githubusercontent.com/ChinaTelecomOperators/SMSForward/main/sms-forward.js
+    url: https://raw.githubusercontent.com/longnk/SMSForward/custom/sms-forward.js
     interval: 86400
